@@ -1,0 +1,44 @@
+/**
+ * 货币操作服务
+ */
+
+var log_manager = require('../log_manager')
+var db = require('../database');
+const logger = require("../log").logger;
+
+//增加房卡
+exports.add_ingot = function (user_id, ingot_value, log_point, gtype, server_type) {
+
+}
+//增加钻石
+exports.add_gold = function (user_id, gold_value, log_point, gtype, server_type) {
+
+}
+//消耗房卡
+exports.lose_ingot = function (user_id, ingot_value, log_point, gtype, server_type) {
+    db.cost_ingot(user_id, ingot_value, function (err, rows) {
+        if (err) {
+            logger.error("LOSE INGOT FAILED: log_point = %d, err= %s", log_point, err);
+            return;
+        }
+        if (rows[0][0].result != 1) {
+            logger.warn('LOSE INGOT db log_point = %s,result = %d', log_point, rows[0][0].result);
+        } else {
+            log_manager.insert_ingot_log(user_id, user_id, 0, log_point, ingot_value, rows[0][0].now_ingot, gtype, rows[0][0].platform, rows[0][0].channel, rows[0][0].agent_id, server_type);
+        }
+    });
+}
+//消耗钻石
+exports.lose_gold = function (user_id, gold_value, log_point, gtype, server_type) {
+    db.cost_gold(user_id, gold_value, function (err, rows) {
+        if (err) {
+            logger.error("LOSE GOLD FAILED: log_point = %d, err= %s", log_point, err);
+            return;
+        }
+        if (rows[0][0].result != 1) {
+            logger.warn('LOSE GOLD db log_point = %s,result = %d', log_point, rows[0][0].result);
+        } else {
+            log_manager.insert_gold_log(user_id, user_id, 0, log_point.GOLD_COST_OPEN, gold_value, rows[0][0].now_gold, gtype, rows[0][0].platform, rows[0][0].channel, rows[0][0].agent_id, server_type);
+        }
+    });
+}

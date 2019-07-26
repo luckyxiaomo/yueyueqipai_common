@@ -1,0 +1,5 @@
+### 获得任务列表
+http://192.168.0.142:9001/get_tasks?account=guest_q1
+
+### 领取任务奖励
+http://192.168.0.142:9001/get_task_reward?account=guest_q1&task_id=1

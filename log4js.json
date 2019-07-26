@@ -1,0 +1,16 @@
+{
+    "appenders": {
+      "out": { "type": "stdout" },
+      "common":{
+        "type": "dateFile",
+        "filename": "logs/common",
+        "pattern": "-yyyy-MM-dd.log",
+        "category": "default",
+        "alwaysIncludePattern":"true"
+      }
+    },
+    "categories": {
+      "default":{"appenders":["out"],"level":"DEBUG"},
+      "common":{"appenders":["out","common"],"level":"DEBUG"}
+    }
+}
