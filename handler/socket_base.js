@@ -45,6 +45,11 @@ exports.register_handler = function (socket) {
     socket.on('game_ping', (data) => {
         socket.emit('game_pong')
     })
+
+    //错误
+    socket.on('error', (err) => {
+        logger.error("scoket on error ==>", err)
+    })
 }
 
 
