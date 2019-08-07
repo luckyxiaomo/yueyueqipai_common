@@ -133,7 +133,8 @@ exports.register_handler = function (socket) {
 
     // 消息中间件
     socket.use((data, next) => {
-        console.log(data);
+        if (data[0] != "game_ping")
+            console.log(data);
         return next();
         // if (data[0] in white_cmd_list) return next();
         // next(new Error('Not Auth！！！'));
