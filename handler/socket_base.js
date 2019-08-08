@@ -7,6 +7,7 @@ const logger = log4js.getLogger(path.basename(__filename));
  * 通用socket handlers
  */
 const dhrc4 = require('../utils/dhrc4')
+const db_redis = require('../utils/db_redis');
 const crypto = require('crypto')
 const b64_reg = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 const white_cmd_list = ['challenge', 'auth'];
@@ -16,7 +17,7 @@ const white_cmd_list = ['challenge', 'auth'];
  */
 exports.register_handler = function (socket) {
     logger.debug("socket connection");
-    var keys = dhrc4.gen_key();
+    const keys = dhrc4.gen_key();
     socket.challenge = {};
     socket.challenge.private_key = keys.private_key;
     socket.emit('key', { public_key: keys.public_key });
@@ -29,16 +30,16 @@ exports.register_handler = function (socket) {
             return;
         }
         socket.challenge.secret = dhrc4.secret(socket.challenge.private_key, data.key)
-        var rd_str = crypto.randomBytes(16).toString('base64');
+        const rd_str = crypto.randomBytes(16).toString('base64');
         socket.challenge.rd_str = rd_str;
-        var cy_str = dhrc4.encrypto(rd_str, socket.challenge.secret)
+        const cy_str = dhrc4.encrypto(rd_str, socket.challenge.secret)
         socket.emit('challenge', { cy_str: cy_str });
     });
 
     //认证
-    socket.on('auth', data => {
-        var rd_text = data.rd_text;
-        var token = data.token;
+    socket.on('auth', async data => {
+        const rd_text = data.rd_text;
+        const token = data.token;
 
         if (!rd_text || !token) {
             socket.disconnect(true);
@@ -48,6 +49,12 @@ exports.register_handler = function (socket) {
         //验证rd_text
         if (rd_text != socket.challenge.rd_str && process.ENV_CONFIG.ENV != "dev") {
             socket.disconnect(true);
+            return;
+        }
+
+        // 验证token
+        const user_id = await db_redis.get_value_async(db_redis.FIELD.TOKEN + token);
+        if (!user_id) {
             return;
         }
 
