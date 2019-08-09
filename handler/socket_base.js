@@ -50,8 +50,8 @@ exports.register_handler = function (socket) {
         }
 
         // 验证token
-        const account = await database_mgr_base.get_user_account_sync(token);
-        const user_id = await user_mgr_base.load_user_info_sync(account);
+        const account = await database_mgr_base.get_user_account_async(token);
+        const user_id = await user_mgr_base.load_user_info_async(account);
         if (!user_id) {
             socket.disconnect(true);
             return;

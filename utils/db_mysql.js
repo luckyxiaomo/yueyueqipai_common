@@ -80,18 +80,18 @@ exports.query_with_params = function (area, sql, params, callback) {
  * @param {*} sql 
  * @param {*} params 
  */
-exports.query_sync_params = function (area, sql, params) {
+exports.query_async_params = function (area, sql, params) {
     logger.debug("SQL: ", sql);
     return new Promise((resolve, reject) => {
         pools[area].getConnection((err_conn, connection) => {
             if (err_conn) {
-                logger.error("query_sync_params get connection ERROR:", err_conn);
+                logger.error("query_async_params get connection ERROR:", err_conn);
                 resolve(false);
             } else {
                 connection.query(sql, params, (err_query, rows) => {
                     connection.release();
                     if (err_query) {
-                        logger.error("query_sync_params query ERROR:", err_query);
+                        logger.error("query_async_params query ERROR:", err_query);
                         resolve(false);
                     } else {
                         resolve(rows);
@@ -129,18 +129,18 @@ exports.query = function (area, sql, callback) {
  * @param {*} sql 
  * @param {*} callback 
  */
-exports.query_sync = function (area, sql, callback) {
+exports.query_async = function (area, sql, callback) {
     logger.debug("SQL: ", sql);
     return new Promise((resolve, reject) => {
         pools[area].getConnection((err_conn, connection) => {
             if (err_conn) {
-                logger.error("query_sync get connection ERROR:", err_conn);
+                logger.error("query_async get connection ERROR:", err_conn);
                 resolve(false);
             } else {
                 connection.query(sql, (err_query, rows) => {
                     connection.release();
                     if (err_query) {
-                        logger.error("query_sync query ERROR:", err_query);
+                        logger.error("query_async query ERROR:", err_query);
                         resolve(false);
                     } else {
                         resolve(rows);
@@ -189,7 +189,7 @@ exports.call_proc = function (area, proc_name, params, callback) {
  * @param {*} proc_name 
  * @param {*} params 
  */
-exports.call_proc_sync = function (area, proc_name, params) {
+exports.call_proc_async = function (area, proc_name, params) {
     return new Promise((resolve, reject) => {
         pools[area].getConnection(function (err_conn, connection) {
             if (err_conn) {

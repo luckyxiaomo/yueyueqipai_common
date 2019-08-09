@@ -58,12 +58,12 @@ exports.bind_table = function (user_ids, table_id) {
     })
 }
 
-exports.get_user_info_sync = async function (user_id) {
-    return await database_mgr_base.get_user_info_sync(user_map_account[user_id]);
+exports.get_user_info_async = async function (user_id) {
+    return await database_mgr_base.get_user_info_async(user_map_account[user_id]);
 }
 
-exports.load_user_info_sync = async function (account = "") {
-    const user_info = await database_mgr_base.get_user_info_sync(account);
+exports.load_user_info_async = async function (account = "") {
+    const user_info = await database_mgr_base.get_user_info_async(account);
     if (user_info) {
         user_map_account[user_info.userid] = account
         return user_info.user_id;
