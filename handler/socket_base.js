@@ -7,7 +7,8 @@ const logger = log4js.getLogger(path.basename(__filename));
  * 通用socket handlers
  */
 const dhrc4 = require('../utils/dhrc4')
-const db_redis = require('../utils/db_redis');
+const user_mgr_base = require('../manager/user_mgr_base');
+const database_mgr_base = require('../manager/database_mgr_base');
 const crypto = require('crypto')
 const b64_reg = /^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{4}|[A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)$/
 const white_cmd_list = ['challenge', 'auth'];
@@ -41,27 +42,23 @@ exports.register_handler = function (socket) {
         const rd_text = data.rd_text;
         const token = data.token;
 
-        if (!rd_text || !token) {
-            socket.disconnect(true);
-            return;
-        }
-
-        //验证rd_text
-        if (rd_text != socket.challenge.rd_str && process.ENV_CONFIG.ENV != "dev") {
+        if (!rd_text || !token          // 参数校验
+            || (rd_text != socket.challenge.rd_str && process.ENV_CONFIG.ENV != "dev") //验证rd_text
+        ) {
             socket.disconnect(true);
             return;
         }
 
         // 验证token
-        const user_id = await db_redis.get_value_async(db_redis.FIELD.TOKEN + token);
+        const account = await database_mgr_base.get_user_account_sync(token);
+        const user_id = await user_mgr_base.load_user_info_sync(account);
         if (!user_id) {
+            socket.disconnect(true);
             return;
         }
 
-        // 先随机给个用户ID
-        socket.user_id = (Math.random() * (100 + 1) + 10).toFixed(0);
-
         //标记socket已经认证
+        socket.user_id = user_id;
         socket.authed = true;
         socket.emit('auth_finish');
     });

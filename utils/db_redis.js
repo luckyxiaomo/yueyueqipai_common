@@ -6,7 +6,8 @@ const logger = log4js.getLogger(path.basename(__filename));
 const RedisPool = require("sol-redis-pool")
 let redis_pool = null;
 const FIELD = {
-    TOKEN: "token:"
+    TOKEN: "token:",
+    ACCOUNT: "account"
 }
 
 exports.FIELD = FIELD;
