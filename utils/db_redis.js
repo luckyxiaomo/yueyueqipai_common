@@ -7,7 +7,7 @@ const RedisPool = require("sol-redis-pool")
 let redis_pool = null;
 const FIELD = {
     TOKEN: "token:",
-    ACCOUNT: "account"
+    ACCOUNT: "account:"
 }
 
 exports.FIELD = FIELD;

@@ -9,6 +9,12 @@ const logger = log4js.getLogger(path.basename(__filename));
 const mysql = require("mysql");
 const pools = {};   // 连接池
 
+//连接池索引
+exports.DB_AREA = {
+    GAME_DB: "game_db",
+    MATCH_DB: "match_db",
+}
+
 
 const DB_TYPE = {
     DB_FORK: 'fork',

@@ -10,7 +10,7 @@ const database_mgr_base = require('./database_mgr_base');
 /**
  * 数据存储区域
  */
-const user_map_info = {} // K:user_id V:user_info
+const user_map_account = {} // K:user_id V:account
 const user_map_socket = {} // K:user_id V:socket
 
 /**
@@ -58,15 +58,15 @@ exports.bind_table = function (user_ids, table_id) {
     })
 }
 
-exports.get_user_info = function (user_id) {
-    return user_map_info[user_id];
+exports.get_user_info_sync = async function (user_id) {
+    return await database_mgr_base.get_user_info_sync(user_map_account[user_id]);
 }
 
 exports.load_user_info_sync = async function (account = "") {
     const user_info = await database_mgr_base.get_user_info_sync(account);
     if (user_info) {
-        user_map_info[user_info.userid] = user_info
-        return user_info.userid;
+        user_map_account[user_info.userid] = account
+        return user_info.user_id;
     }
     return null;
 }
