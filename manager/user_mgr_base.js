@@ -52,10 +52,9 @@ exports.send_user_Msg = function (user_id, event, msgdata) {
 };
 
 
-exports.bind_table = function (user_ids, table_id) {
-    user_ids.map(user_id => {
-        user_map_socket[user_id].table_id = table_id;
-    })
+exports.bind_table = function (user_id, table_id) {
+    user_map_socket[user_id].table_id = table_id;
+    user_map_socket[user_id].join(table_id);
 }
 
 exports.get_user_info_async = async function (user_id) {
