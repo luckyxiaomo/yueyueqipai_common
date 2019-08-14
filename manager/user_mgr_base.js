@@ -97,3 +97,6 @@ exports.load_user_info_async = async function (account = "") {
     return null;
 }
 
+exports.get_user_amount = function () {
+    return user_map_account.length;
+}
