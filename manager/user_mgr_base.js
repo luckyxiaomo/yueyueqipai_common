@@ -38,6 +38,8 @@ exports.bind_socket = function (user_id, socket) {
     } else {
         user_map_socket[user_id] = socket
     }
+    socket.user_id = user_id;
+    socket.authed = true;
 }
 
 /**
@@ -48,7 +50,10 @@ exports.bind_socket = function (user_id, socket) {
 // }
 
 exports.free_socket = function (user_id) {
-    delete user_map_socket[user_id];
+    if (user_map_socket[user_id]) {
+        user_map_socket[user_id].disconnect(true);
+        delete user_map_socket[user_id];
+    }
 }
 
 exports.bind_table = function (user_id, table_id) {
@@ -68,9 +73,10 @@ exports.free_table = function (user_id) {
 exports.send_user_Msg = function (user_id, event, msgdata) {
     const socket = user_map_socket[user_id];
     if (socket == null) {
+        logger.warn("用户socket丢失，user_id:%s", user_id);
         return;
     }
-
+    logger.debug("用户消息推送，USER:%s  EVENT:%s  MSG:%s", user_id, event, JSON.stringify(msgdata));
     socket.emit(event, msgdata);
 };
 

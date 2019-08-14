@@ -58,8 +58,7 @@ exports.register_handler = function (socket) {
         }
 
         //标记socket已经认证
-        socket.user_id = user_id;
-        socket.authed = true;
+        user_mgr_base.bind_socket(user_id, socket);
         socket.emit('auth_finish');
     });
 
