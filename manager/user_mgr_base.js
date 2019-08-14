@@ -74,6 +74,10 @@ exports.send_user_Msg = function (user_id, event, msgdata) {
     socket.emit(event, msgdata);
 };
 
+exports.get_user_table_id = function (user_id) {
+    return user_map_table[user_id];
+}
+
 exports.get_user_info_async = async function (user_id) {
     return await database_mgr_base.get_user_info_async(user_map_account[user_id]);
 }
