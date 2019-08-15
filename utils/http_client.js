@@ -7,12 +7,10 @@ const logger = log4js.getLogger(path.basename(__filename));
  * http 客户端服务
  */
 
-var http = require('http');
-var https = require('https');
-var qs = require('querystring');
-exports.init = function (where) {
-    logger.info("%s HTTP SERVICE READY.", where);
-}
+const http = require('http');
+const https = require('https');
+const qs = require('querystring');
+
 
 String.prototype.format = function (args) {
     var result = this;
