@@ -44,7 +44,7 @@ exports.update = function (gameServerInfo) {
             heapUsed: mem_format(mem.heapUsed),
             rss: mem_format(mem.rss)
         })
-        logger.debug("load:%s memory:%s", gameServerInfo.load, gameServerInfo.memory);
+        // logger.debug("load:%s memory:%s", gameServerInfo.load, gameServerInfo.memory);
         http_client.get(CONFIG.HALL_IP, CONFIG.HALL_PORT, "/register_gs", gameServerInfo, (ret, data) => {
             if (ret && data.errcode != 0) {
                 logger.error(data.errmsg);
