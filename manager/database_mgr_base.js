@@ -13,8 +13,7 @@ const db_redis = require('../utils/db_redis');
  * @param {*} account 
  */
 exports.is_user_exist_async = async function (account = "") {
-    let sql = "SELECT userid FROM users WHERE account = '{0}' and `lock` = 0";
-    sql = sql.format(account);
+    const sql = `SELECT userid FROM users WHERE account = '${account}' and 'lock' = 0`;
     return await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
 }
 
@@ -29,8 +28,7 @@ exports.get_user_info_async = async function (account = "") {
     if (redis_value) {
         return JSON.parse(redis_value);
     } else {
-        let sql = "select * from users,user_extro_info where users.userid = user_extro_info.user_id  and users.account = '{0}' limit 1";
-        sql = sql.format(account);
+        const sql = `select * from users,user_extro_info where users.userid = user_extro_info.user_id  and users.account =  '${account}'  limit 1`;
         const user_infos = await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
         if (user_infos.length == 1) {
             await db_redis.set_value_async(redis_key, user_infos[0]);
@@ -40,8 +38,7 @@ exports.get_user_info_async = async function (account = "") {
 }
 
 exports.update_user_login_time_async = async function (account = "") {
-    let sql = "UPDATE users SET login_time = unix_timestamp(now())  WHERE account = '{0}' ";
-    sql = sql.format(account);
+    const sql = `UPDATE users SET login_time = unix_timestamp(now())  WHERE account = '${account}' `;
     return await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
 }
 
