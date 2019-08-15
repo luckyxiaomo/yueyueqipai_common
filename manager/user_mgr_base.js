@@ -64,8 +64,8 @@ exports.bind_table = function (user_id, table_id) {
 
 exports.free_table = function (user_id) {
     if (user_map_socket[user_id]) {
+        user_map_socket[user_id].leave(user_map_socket[user_id].table_id);
         user_map_socket[user_id].table_id = null;
-        user_map_socket[user_id].leave(table_id);
     }
     delete user_map_table[user_id];
 }
