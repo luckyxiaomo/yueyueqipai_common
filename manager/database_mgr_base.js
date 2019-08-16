@@ -1,5 +1,5 @@
 const path = require("path");
-const log4js = require('../logs/log').log4js;
+const log4js = require('../utils/log').log4js;
 const logger = log4js.getLogger(path.basename(__filename));
 
 ///////////////////////////////////////////////////////
@@ -12,9 +12,10 @@ const db_redis = require('../utils/db_redis');
  * 验证用户是否存在
  * @param {*} account 
  */
-exports.is_user_exist_async = async function (account = "") {
+exports.get_user_id_exist_async = async function (account = "") {
     const sql = `SELECT userid FROM users WHERE account = '${account}' and 'lock' = 0`;
-    return await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
+    const user = await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
+    return user.length > 0 ? user[0].userid : null;
 }
 
 /**
