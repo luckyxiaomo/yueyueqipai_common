@@ -9,6 +9,7 @@ const FIELD = {
     TOKEN: "token:",
     ACCOUNT: "account:",
     TABLE: "table:",
+    WAIT: "wait:",
 }
 
 exports.FIELD = FIELD;
