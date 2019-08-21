@@ -57,8 +57,10 @@ exports.free_socket = function (user_id) {
 }
 
 exports.bind_table = function (user_id, table_id) {
-    user_map_socket[user_id].table_id = table_id;
-    user_map_socket[user_id].join(table_id);
+    if (user_map_socket[user_id]) {
+        user_map_socket[user_id].table_id = table_id;
+        user_map_socket[user_id].join(table_id);
+    }
     user_map_table[user_id] = table_id;
 }
 
