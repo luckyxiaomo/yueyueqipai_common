@@ -80,6 +80,10 @@ exports.send_user_Msg = function (user_id, event, msgdata) {
     socket.emit(event, msgdata);
 };
 
+exports.set_user_table_id = function (user_id, table_id) {
+    user_map_table[user_id] = table_id;
+}
+
 exports.get_user_table_id = function (user_id) {
     return user_map_table[user_id];
 }
