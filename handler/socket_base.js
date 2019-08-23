@@ -76,10 +76,12 @@ exports.register_handler = function (socket) {
     socket.use((data, next) => {
         if (data[0] != "game_ping") logger.debug(data);     //  过滤心跳，打印输出
         if (white_cmd_list.indexOf(data[0]) != -1 && socket.authed == false) return;    // 权限验证
-        if (data.length > 1 && typeof data[1] != "object") {
+        try {
+            if (data.length > 1 && typeof data[1] != "object") {
+                data[1] = JSON.parse(data[1]);
+            }
+        } catch (error) {
             logger.warn("data[1] is not object :", data);
-            socket.disconnect(true);
-            return;
         }
         return next();
     });
