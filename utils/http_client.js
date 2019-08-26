@@ -36,16 +36,45 @@ String.prototype.format = function (args) {
     return result;
 };
 
-exports.post = function (host, port, path, data, callback, safe) {
+exports.http_post = function (host, port, path, data) {
+    // logger.debug(JSON.stringify(data).length);
+    const opt = {
+        host,
+        port,
+        path,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // "Content-Length": JSON.stringify(data).length,
+        },
+    };
+    const req = http.request(opt, function (res) {
+        res.setEncoding("utf-8");
+        // res.on("data", function (chunk) {
+        //     console.log(chunk)
+        // });
+    });
 
-    var content = qs.stringify(data);
+    req.on("error", function (err) {
+        logger.warn(err.message);
+    });
+    req.write(JSON.stringify(data));
+    req.end();
+};
+
+
+exports.post = function (host, port, path, data, callback, safe) {
+    // var content = qs.stringify(data);
+    // logger.debug(data);
+    const content = JSON.stringify(data);
+    // logger.debug(JSON.parse(content));
     var options = {
         host: host,
         port: port,
         path: path,
         method: 'POST',
         headers: {
-            "Content-Type": 'application/x-www-form-urlencoded',
+            "Content-Type": 'application/json',
             "Content-Length": content.length
         }
     };
@@ -58,7 +87,7 @@ exports.post = function (host, port, path, data, callback, safe) {
     var req = req_pro.request(options, function (res) {
         // logger.log('STATUS: ' + res.statusCode);  
         // logger.log('HEADERS: ' + JSON.stringify(res.headers));  
-        res.setEncoding('utf8');
+        res.setEncoding('utf-8');
         res.on('data', function (chunk) {
             //logger.log('BODY: ' + chunk);
             callback(chunk);
@@ -68,6 +97,7 @@ exports.post = function (host, port, path, data, callback, safe) {
     req.on('error', function (e) {
         logger.error('problem with request: ' + e.message);
     });
+
     req.write(content);
     req.end();
 };
@@ -97,7 +127,7 @@ exports.post2 = function (host, path, data, callback, safe) {
     var req = req_pro.request(options, function (res) {
         // logger.log('STATUS: ' + res.statusCode);  
         // logger.log('HEADERS: ' + JSON.stringify(res.headers));  
-        res.setEncoding('utf8');
+        res.setEncoding('utf-8');
         res.on('data', function (chunk) {
             // logger.log('BODY: ' + chunk)
             callback(chunk);
@@ -107,6 +137,7 @@ exports.post2 = function (host, path, data, callback, safe) {
     req.on('error', function (e) {
         logger.error('problem with request: ' + e.message);
     });
+
     req.write(content);
     req.end();
 };
@@ -147,6 +178,7 @@ exports.get = function (host, port, path, data, callback, safe) {
         path: path + '?' + content,
         method: 'GET'
     };
+    // logger.debug(data);
     if (port) {
         options.port = port;
     }

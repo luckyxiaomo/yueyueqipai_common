@@ -5,10 +5,8 @@ const logger = log4js.getLogger(path.basename(__filename));
 //////////////////////////////////////////////////////
 const http_client = require('../utils/http_client');
 const express = require('express');
-const user_mgr_base = require('../manager/user_mgr_base');
 const app = express();
 const CONFIG = process.ENV_CONFIG;
-let LastTickTime = 0;
 
 exports.start = function (http_port) {
     app.listen(http_port, CONFIG.LOCAL_IP, () => {
@@ -32,27 +30,3 @@ app.all('*', function (req, res, next) {
     next();
 });
 
-//向大厅服定时心跳
-exports.update = function (gameServerInfo) {
-    const now = Date.now();
-    if (now > LastTickTime + CONFIG.HTTP_TICK_TIME) {
-        LastTickTime = now;
-        gameServerInfo.load = user_mgr_base.get_user_amount();
-        const mem = process.memoryUsage();
-        gameServerInfo.memory = JSON.stringify({
-            heapTotal: mem_format(mem.heapTotal),
-            heapUsed: mem_format(mem.heapUsed),
-            rss: mem_format(mem.rss)
-        })
-        // logger.debug("load:%s memory:%s", gameServerInfo.load, gameServerInfo.memory);
-        http_client.get(CONFIG.HALL_IP, CONFIG.HALL_PORT, "/register_gs", gameServerInfo, (ret, data) => {
-            if (ret && data.errcode != 0) {
-                logger.error(data.errmsg);
-            }
-        });
-    }
-}
-
-function mem_format(bytes) {
-    return (bytes / 1024 / 1024).toFixed(2) + 'MB';
-};
