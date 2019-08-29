@@ -62,6 +62,36 @@ exports.http_post = function (host, port, path, data) {
     req.end();
 };
 
+exports.http_post_asynce = async function (host, port, path, data) {
+    // logger.debug(JSON.stringify(data).length);
+    const opt = {
+        host,
+        port,
+        path,
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            // "Content-Length": JSON.stringify(data).length,
+        },
+    };
+
+    return new Promise((resolve, reject) => {
+        const req = http.request(opt, function (res) {
+            res.setEncoding("utf-8");
+            res.on("data", function (chunk) {
+                resolve(JSON.parse(chunk));
+            });
+        });
+
+        req.on("error", function (err) {
+            logger.warn(err.message);
+            reject({});
+        });
+        req.write(JSON.stringify(data));
+        req.end();
+    })
+};
+
 
 exports.post = function (host, port, path, data, callback, safe) {
     // var content = qs.stringify(data);
