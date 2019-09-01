@@ -62,7 +62,7 @@ exports.http_post = function (host, port, path, data) {
     req.end();
 };
 
-exports.http_post_asynce = async function (host, port, path, data) {
+exports.http_post_async = async function (host, port, path, data) {
     // logger.debug(JSON.stringify(data).length);
     const opt = {
         host,
