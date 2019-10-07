@@ -1,7 +1,7 @@
 /**
  * 货币操作服务
  */
-
+const http_client = require("../utils/http_client");
 var log_manager = require('../log_manager')
 var db = require('../database');
 const logger = require("../log").logger;
