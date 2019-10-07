@@ -229,7 +229,7 @@ exports.eneter_room_async = async function (req, res) {
 		sex: sex
 	}
 	//安排玩家坐下
-	await roomMgr.enterRoom(roomId, user_info, function (ret) {
+	await roomMgr.enterRoom_async(roomId, user_info, function (ret) {
 		if (ret != 0) {
 			http.send(res, ret, 'enter room failed');
 			return;
