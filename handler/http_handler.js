@@ -120,7 +120,7 @@ exports.create_room_begin = function (req, res) {
 	}
 }
 
-exports.create_room_final = function (req, res, data) {
+exports.create_room_final_async = async function (req, res, data) {
 
 	var userId = data.userId;
 	var ingot = data.ingot;
