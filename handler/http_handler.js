@@ -205,7 +205,7 @@ exports.create_room_final_async = async function (req, res, data) {
 	});
 }
 
-exports.eneter_room = function (req, res) {
+exports.eneter_room_async = async function (req, res) {
 	show_request('/enter_room  ====>', JSON.stringify(req.query))
 	var userId = Number(req.query.userid);
 	var name = req.query.name;
@@ -229,7 +229,7 @@ exports.eneter_room = function (req, res) {
 		sex: sex
 	}
 	//安排玩家坐下
-	roomMgr.enterRoom(roomId, user_info, function (ret) {
+	await roomMgr.enterRoom(roomId, user_info, function (ret) {
 		if (ret != 0) {
 			http.send(res, ret, 'enter room failed');
 			return;
