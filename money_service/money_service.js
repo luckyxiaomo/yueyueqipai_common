@@ -42,3 +42,21 @@ exports.lose_gold = function (user_id, gold_value, log_point, gtype, server_type
         }
     });
 }
+
+// 扣除玩家道具
+exports.decrease_user_items_async = async function (user, items) {
+    let res = await http_client.http_post_async(
+        process.ENV_CONFIG.BAG_SERVER_IP,
+        process.ENV_CONFIG.BAG_SERVER_PORT,
+        "/decrease",
+        {
+            user,
+            items,
+            remark: `私人场扣费：${JSON.stringify(items)}`
+        }
+    );
+    if (!res || res.code != 0) {
+        logger.error("私人场扣费失败", res);
+        return;
+    }
+}
