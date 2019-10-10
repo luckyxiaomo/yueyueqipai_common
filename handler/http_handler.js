@@ -42,6 +42,24 @@ function show_request(commond, args) {
 	}
 }
 
+// 核验玩家道具
+async function check_user_items_async(user, items, condition = true) {
+	const res = await http_client.http_post_async(
+		process.ENV_CONFIG.BAG_SERVER_IP,
+		process.ENV_CONFIG.BAG_SERVER_PORT,
+		"/checkout",
+		{
+			user,
+			items,
+			condition
+		}
+	);
+	if (!res || res.code != 0) {
+		return false;
+	}
+	return res.data;
+}
+
 exports.init = function (room_manager, user_manager, token_manager, log, global_settings, gsf) {
 	roomMgr = room_manager;
 	userMgr = user_manager;
@@ -300,20 +318,3 @@ exports.update = function () {
 }
 
 
-// 核验玩家道具
-async function check_user_items_async(user, items, condition = true) {
-	const res = await http_client.http_post_async(
-		process.ENV_CONFIG.BAG_SERVER_IP,
-		process.ENV_CONFIG.BAG_SERVER_PORT,
-		"/checkout",
-		{
-			user,
-			items,
-			condition
-		}
-	);
-	if (!res || res.code != 0) {
-		return false;
-	}
-	return res.data;
-}
