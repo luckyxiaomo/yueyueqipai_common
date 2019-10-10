@@ -43,6 +43,24 @@ exports.lose_gold = function (user_id, gold_value, log_point, gtype, server_type
     });
 }
 
+// 核验玩家道具
+exports.check_user_items_async = async function (user, items, condition = true) {
+    const res = await http_client.http_post_async(
+        process.ENV_CONFIG.BAG_SERVER_IP,
+        process.ENV_CONFIG.BAG_SERVER_PORT,
+        "/checkout",
+        {
+            user,
+            items,
+            condition
+        }
+    );
+    if (!res || res.code != 0) {
+        return false;
+    }
+    return res.data;
+}
+
 // 扣除玩家道具
 exports.decrease_user_items_async = async function (user, items) {
     let res = await http_client.http_post_async(

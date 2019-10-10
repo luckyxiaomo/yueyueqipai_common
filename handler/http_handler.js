@@ -7,7 +7,7 @@ var db = require('../database');
 var error = require('../error').error;
 var log_manager = require('../log_manager');
 var activity_global = require('../activity_service/global_setting').global;
-
+const money_service = require('../money_service/money_service')
 var ip_service = require('../ip_service/ip_service');
 var version = require('../version_service/version_service').version;
 var logger = require("../log").logger;
@@ -40,24 +40,6 @@ function show_request(commond, args) {
 	if (process.ENV_CONFIG.ENV == 'dev') {
 		logger.debug('Http[%s][%s]', commond, args);
 	}
-}
-
-// 核验玩家道具
-async function check_user_items_async(user, items, condition = true) {
-	const res = await http_client.http_post_async(
-		process.ENV_CONFIG.BAG_SERVER_IP,
-		process.ENV_CONFIG.BAG_SERVER_PORT,
-		"/checkout",
-		{
-			user,
-			items,
-			condition
-		}
-	);
-	if (!res || res.code != 0) {
-		return false;
-	}
-	return res.data;
 }
 
 exports.init = function (room_manager, user_manager, token_manager, log, global_settings, gsf) {
@@ -139,7 +121,7 @@ exports.create_room_final_async = async function (req, res, data) {
 		if (global.has_rule(conf.rule_index, global.MASK_INGOT_GAME)) {
 			//lqzzb  房主代付
 			if (process.ENV_CONFIG.ENV == "lqzzb") {
-				if (!await check_user_items_async(userId, [
+				if (!await money_service.check_user_items_async(userId, [
 					{
 						itemName: "钻石",
 						count: global.get_ingot_value(conf.rule_index)
@@ -151,7 +133,7 @@ exports.create_room_final_async = async function (req, res, data) {
 					return;
 				}
 			} else {
-				if (!await check_user_items_async(userId, [
+				if (!await money_service.check_user_items_async(userId, [
 					{
 						itemName: "房卡",
 						count: global.get_ingot_value(conf.rule_index)
@@ -168,23 +150,35 @@ exports.create_room_final_async = async function (req, res, data) {
 			}
 		}
 
-		// //金币游戏
-		// if (global.has_rule(conf.rule_index, global.MASK_GOLD_GAME)) {
-		// 	//lqzzb AA付款
-		// 	if (process.ENV_CONFIG.ENV == 'lqzzb') {
-		// 		if (gold < global.get_ingot_value(conf.rule_index)) {
-		// 			logger.warn("lqzzb not gold to create Room");
-		// 			http.send(res, error.ROOM_CREATE_GOLD_NOT);
-		// 			return;
-		// 		}
-		// 	} else {
-		// 		if (gold < global.get_ingot_value(conf.rule_index)) {
-		// 			logger.warn("not ingot to create Room");
-		// 			http.send(res, error.ROOM_CREATE_GOLD_NOT);
-		// 			return;
-		// 		}
-		// 	}
-		// }
+		//钻石游戏
+		if (global.has_rule(conf.rule_index, global.MASK_GOLD_GAME)) {
+			//lqzzb AA付款
+			if (process.ENV_CONFIG.ENV == 'lqzzb') {
+				if (!await money_service.check_user_items_async(userId, [
+					{
+						itemName: "钻石",
+						count: global.get_ingot_value(conf.rule_index)
+					}
+				])) {
+					// if (gold < global.get_ingot_value(conf.rule_index)) {
+					logger.warn("lqzzb not gold to create Room");
+					http.send(res, error.ROOM_CREATE_GOLD_NOT);
+					return;
+				}
+			} else {
+				if (!await money_service.check_user_items_async(userId, [
+					{
+						itemName: "钻石",
+						count: global.get_ingot_value(conf.rule_index)
+					}
+				])) {
+					// if (gold < global.get_ingot_value(conf.rule_index)) {
+					logger.warn("not ingot to create Room");
+					http.send(res, error.ROOM_CREATE_GOLD_NOT);
+					return;
+				}
+			}
+		}
 	} else {
 		consume_ingot = 0;
 	}
