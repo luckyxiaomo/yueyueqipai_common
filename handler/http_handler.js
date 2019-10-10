@@ -139,7 +139,7 @@ exports.create_room_final_async = async function (req, res, data) {
 		if (global.has_rule(conf.rule_index, global.MASK_INGOT_GAME)) {
 			//lqzzb  房主代付
 			if (process.ENV_CONFIG.ENV == "lqzzb") {
-				if (!await check_user_items_async(userid, [
+				if (!await check_user_items_async(userId, [
 					{
 						itemName: "钻石",
 						count: global.get_ingot_value(conf.rule_index)
@@ -151,7 +151,7 @@ exports.create_room_final_async = async function (req, res, data) {
 					return;
 				}
 			} else {
-				if (!await check_user_items_async(userid, [
+				if (!await check_user_items_async(userId, [
 					{
 						itemName: "房卡",
 						count: global.get_ingot_value(conf.rule_index)
