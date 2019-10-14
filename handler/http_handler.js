@@ -170,10 +170,13 @@ exports.create_room_final_async = async function (req, res, data) {
 					{
 						itemName: "钻石",
 						count: global.get_ingot_value(conf.rule_index)
+					}, {
+						itemName: "VIP-1",
+						count: 1
 					}
-				])) {
+				], false)) {
 					// if (gold < global.get_ingot_value(conf.rule_index)) {
-					logger.warn("not ingot to create Room");
+					logger.warn("not gold to create Room");
 					http.send(res, error.ROOM_CREATE_GOLD_NOT);
 					return;
 				}
