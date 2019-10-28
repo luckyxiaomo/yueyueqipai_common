@@ -50,10 +50,10 @@ exports.bind_socket = function (user_id, socket) {
 // }
 
 exports.free_socket = function (user_id) {
-    if (user_map_socket[user_id]) {
-        user_map_socket[user_id].disconnect(true);
-        delete user_map_socket[user_id];
-    }
+    // if (user_map_socket[user_id]) {
+    //     user_map_socket[user_id].disconnect(true);
+    //     delete user_map_socket[user_id];
+    // }
 }
 
 exports.bind_table = function (user_id, table_id) {
