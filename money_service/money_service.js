@@ -150,7 +150,7 @@ async function deal_inviter_awards_async() {
                             sender: "系统邮件",
                             content: `你邀请的好友（${user_id}）玩了一局游戏(${process.ENV_CONFIG.NAME})，获得以下奖励`,
                             send_time: 0,
-                            title: "被邀请者游戏奖励",
+                            title: "好友完成了一局游戏",
                             attachs: awards,
                         }
                     )
