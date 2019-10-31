@@ -10,7 +10,6 @@ const database_mgr_base = require('./database_mgr_base');
 /**
  * 数据存储区域
  */
-const user_map_account = {} // K:user_id V:account
 const user_map_socket = {} // K:user_id V:socket
 const user_map_table = {}; //K:user_id V:table_id
 
@@ -21,7 +20,6 @@ const user_map_table = {}; //K:user_id V:table_id
 exports.free_user = function (user_id) {
     exports.free_socket(user_id);
     exports.free_table(user_id);
-    delete user_map_account[user_id];
 }
 
 /**
@@ -91,18 +89,17 @@ exports.get_user_table_id = function (user_id) {
 }
 
 exports.get_user_info_async = async function (user_id) {
-    return await database_mgr_base.get_user_info_async(user_map_account[user_id]);
+    return await database_mgr_base.get_user_info_by_id_async(user_id);
 }
 
 exports.load_user_info_async = async function (account = "") {
     const user_info = await database_mgr_base.get_user_info_async(account);
     if (user_info) {
-        user_map_account[user_info.userid] = account
         return user_info.user_id;
     }
     return null;
 }
 
 exports.get_user_amount = function () {
-    return Object.keys(user_map_account).length;
+    return Object.keys(user_map_socket).length;
 }
