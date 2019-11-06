@@ -7,12 +7,36 @@ var db = require('../database');
 const logger = require("../log").logger;
 
 //增加房卡
-exports.add_ingot = function (user_id, ingot_value, log_point, gtype, server_type) {
-
+exports.add_ingot_async = async function (user_id, ingot_value, remark) {
+    let res = await http_client.http_post_async(
+        process.ENV_CONFIG.BAG_SERVER_IP,
+        process.ENV_CONFIG.BAG_SERVER_PORT,
+        "/increase",
+        {
+            user: user_id,
+            items: [{ itemName: "房卡", count: ingot_value }],
+            remark
+        }
+    );
+    if (!res || res.code != 0) {
+        logger.error(`添加房卡失败，Remark：${remark}`, res);
+    }
 }
 //增加钻石
-exports.add_gold = function (user_id, gold_value, log_point, gtype, server_type) {
-
+exports.add_gold_async = async function (user_id, gold_value, remark) {
+    let res = await http_client.http_post_async(
+        process.ENV_CONFIG.BAG_SERVER_IP,
+        process.ENV_CONFIG.BAG_SERVER_PORT,
+        "/increase",
+        {
+            user: user_id,
+            items: [{ itemName: "钻石", count: gold_value }],
+            remark
+        }
+    );
+    if (!res || res.code != 0) {
+        logger.error(`添加钻石失败，Remark：${remark}`, res);
+    }
 }
 //消耗房卡
 exports.lose_ingot = function (user_id, ingot_value, log_point, gtype, server_type) {
