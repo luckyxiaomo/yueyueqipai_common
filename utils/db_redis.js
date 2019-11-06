@@ -10,6 +10,7 @@ const FIELD = {
     ACCOUNT: "account:",
     TABLE: "table:",
     MATCH: "match:",
+    USER_ID: "user_id:",
 }
 
 exports.FIELD = FIELD;

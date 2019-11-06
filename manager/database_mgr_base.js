@@ -3,7 +3,7 @@ const log4js = require('../utils/log').log4js;
 const logger = log4js.getLogger(path.basename(__filename));
 
 ///////////////////////////////////////////////////////
-
+const crypto = require("../crypto");
 const db_mysql = require('../utils/db_mysql');
 const db_redis = require('../utils/db_redis');
 
@@ -34,6 +34,22 @@ exports.get_user_info_async = async function (account = "") {
         if (user_infos.length == 1) {
             await db_redis.set_value_async(redis_key, user_infos[0]);
         }
+        return user_infos[0];
+    }
+}
+
+exports.get_user_info_by_id_async = async function (user_id = 0) {
+    const redis_key = db_redis.FIELD.USER_ID + user_id;
+    const redis_value = await db_redis.get_value_async(redis_key);
+    if (redis_value) {
+        return JSON.parse(redis_value);
+    } else {
+        const sql = `select * from users,user_extro_info where users.userid = user_extro_info.user_id  and users.userid =  ${user_id}  limit 1`;
+        const user_infos = await db_mysql.query_async(db_mysql.DB_AREA.GAME_DB, sql);
+        if (user_infos.length == 1) {
+            user_infos[0].name = crypto.fromBase64(user_infos[0].name);
+        }
+        await db_redis.set_value_async(redis_key, user_infos[0]);
         return user_infos[0];
     }
 }
