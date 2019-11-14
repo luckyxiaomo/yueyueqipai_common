@@ -6,6 +6,23 @@ var log_manager = require('../log_manager')
 var db = require('../database');
 const logger = require("../log").logger;
 
+
+exports.add_items_async = async function (user_id, items, remark){
+    let res = await http_client.http_post_async(
+        process.ENV_CONFIG.BAG_SERVER_IP,
+        process.ENV_CONFIG.BAG_SERVER_PORT,
+        "/increase",
+        {
+            user: user_id,
+            items,
+            remark
+        }
+    );
+    if (!res || res.code != 0) {
+        logger.error(`添加道具失败，Remark：${remark}`, res);
+    }
+}
+
 //增加房卡
 exports.add_ingot_async = async function (user_id, ingot_value, remark) {
     let res = await http_client.http_post_async(

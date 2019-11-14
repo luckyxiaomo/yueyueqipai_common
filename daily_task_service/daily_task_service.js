@@ -1,12 +1,14 @@
 var all_task_conf = require('./data/daily_task').daily_task;
-if(process.ENV_CONFIG.ENV == 'youyou') {
+if (process.ENV_CONFIG.ENV == 'youyou') {
     all_task_conf = require('./data/daily_task_youyou').daily_task_youyou;
 }
-var db = require('../database');
+// var db = require("../../utils/db");
+//new 数据库
+var db = require('../../utils/database');
 const global_setting = require('./global_setting').global;
+var logger = require("../log_service/log").logger
 var moment = require('moment');
-var logger = require("../log").logger;
-
+const money_service = require("../money_service/money_service");
 
 //查询任务（日常任务、周常任务)
 exports.get_daily_and_week_tasks = function (user_id, call_back) {
@@ -91,10 +93,10 @@ exports.update_daily_and_week_task = function (user_id, target_schedules) {
         week_task = exports.reset_week_tasks(user_id, week_task, week_task_clear_time);
 
         var modify = false;
-        for(var k = 0; k < target_schedules.length; k++) {
+        for (var k = 0; k < target_schedules.length; k++) {
             var target_type = target_schedules[k].target_type;
             var add_schedule = target_schedules[k].add_schedule;
-             //日常任务
+            //日常任务
             for (var i = 0; i < daily_task.length; i++) {
                 if (daily_task[i][1] == target_type && daily_task[i][4] != 2 && daily_task[i][3] < daily_task[i][2]) {
                     daily_task[i][3] += add_schedule;
@@ -123,7 +125,7 @@ exports.update_daily_and_week_task = function (user_id, target_schedules) {
         if (modify) {
             db.update_daily_and_week_task(user_id, JSON.stringify(daily_task), JSON.stringify(week_task), function (success) {
                 if (!success) {
-                    logger.log("update daily and week tasks error!!!");
+                    logger.debug("update daily and week tasks error!!!");
                 }
             });
         }
@@ -133,8 +135,8 @@ exports.update_daily_and_week_task = function (user_id, target_schedules) {
 
 //领取任务奖励.(日常任务、周常任务)
 exports.get_task_reward = function (user_id, task_id, call_back) {
-    // logger.log("user_id===>", user_id, "  task_id====>", task_id);
-    db.get_daily_and_week_tasks(user_id, function (ret) {
+    // logger.debug("user_id===>", user_id, "  task_id====>", task_id);
+    db.get_daily_and_week_tasks(user_id, async function (ret) {
         if (!ret) {
             call_back(false);
             return;
@@ -180,38 +182,13 @@ exports.get_task_reward = function (user_id, task_id, call_back) {
                 return;
             }
             //开始结算奖励.
-            var reward = JSON.parse(task_conf.reward);
-            for (var i = 0; i < reward.length; i++) {
-                var reward_type = reward[i][0];
-                var reward_counts = reward[i][1];
-                if (reward_type == global_setting.REWARD_TYPE_INGOT) {
-                    db.add_ingot(user_id, reward_counts, function (ret) {
-                        if (!ret) {
-                            logger.log("get task reward ---- add_ingot  error!!");
-                        }
-                    });
-                }
-                if (reward_type == global_setting.REWARD_TYPE_GOLD) {
-                    db.add_gold(user_id, reward_counts, function (ret) {
-                        if (!ret) {
-                            logger.log("get task reward ---- add_gold  error!!");
-                        }
-                    });
-                }
-                if (reward_type == global_setting.REWARD_TYPE_TURN) {
-                    db.add_route_counts(user_id, reward_counts, function(err, rows, fields) {
-                        if (err) {
-                            logger.error("get task reward ---- add_route_counts  error!!", err.stack);
-                            return;
-                        }
-                    });
-                }
-            }
+            await send_task_reward_async(user_id, JSON.parse(task_conf.reward));
+
             //更新任务状态.
             cur_task[4] = 2;
             db.update_daily_and_week_task(user_id, JSON.stringify(daily_task), JSON.stringify(week_task), function (success) {
                 if (!success) {
-                    logger.log("update daily and week tasks error!!!");
+                    logger.debug("update daily and week tasks error!!!");
                 }
                 var data = {
                     ret: true,
@@ -238,37 +215,12 @@ exports.get_task_reward = function (user_id, task_id, call_back) {
                 return;
             }
             //开始结算奖励.
-            var reward = JSON.parse(task_conf.reward);
-            for (var i = 0; i < reward.length; i++) {
-                var reward_type = reward[i][0];
-                var reward_counts = reward[i][1];
-                if (reward_type == global_setting.REWARD_TYPE_INGOT) {
-                    db.add_ingot(user_id, reward_counts, function (ret) {
-                        if (!ret) {
-                            logger.log("get task reward ---- add_ingot  error!!");
-                        }
-                    });
-                }
-                if (reward_type == global_setting.REWARD_TYPE_GOLD) {
-                    db.add_gold(user_id, reward_counts, function (ret) {
-                        if (!ret) {
-                            logger.log("get task reward ---- add_gold  error!!");
-                        }
-                    });
-                }
-                if (reward_type == global_setting.REWARD_TYPE_TURN) {
-                    db.add_route_counts(user_id, reward_counts, function(ret){
-                        if (!ret) {
-                            logger.log("get task reward ---- add_route_counts  error!!");
-                        }
-                    });
-                }
-            }
+            await send_task_reward_async(user_id, JSON.parse(task_conf.reward));
             //更新任务状态.
             cur_task[4] = 2;
             db.update_daily_and_week_task(user_id, JSON.stringify(daily_task), JSON.stringify(week_task), function (success) {
                 if (!success) {
-                    logger.log("update daily and week tasks error!!!");
+                    logger.debug("update daily and week tasks error!!!");
                 }
                 var data = {
                     ret: true,
@@ -281,6 +233,28 @@ exports.get_task_reward = function (user_id, task_id, call_back) {
     });
 }
 
+async function send_task_reward_async(user_id, reward) {
+    for (let i = 0; i < reward.length; i++) {
+        let reward_type = reward[i][0];
+        let reward_counts = reward[i][1];
+
+        if (reward_type == global_setting.REWARD_TYPE_INGOT) {
+            await money_service.add_ingot_async(user_id, reward_counts, `任务奖励`);
+        } else if (reward_type == global_setting.REWARD_TYPE_GOLD) {
+            await money_service.add_gold_async(user_id, reward_counts, `任务奖励`);
+        } else if (reward_type == global_setting.REWARD_TYPE_CAIBEI) {
+            await money_service.add_items_async(user_id, [{ itemName: "彩贝", count: reward_counts }], `任务奖励`);
+        } else if (reward_type == global_setting.REWARD_TYPE_TURN) {
+            db.add_route_counts(user_id, reward_counts, function (err, rows, fields) {
+                if (err) {
+                    logger.error("get task reward ---- add_route_counts  error!!", err.stack);
+                    return;
+                }
+            });
+        }
+    }
+}
+
 //重置日常任务.
 exports.reset_daily_tasks = function (user_id, daily_task, daily_task_clear_time) {
     var now_time = moment().unix();
@@ -288,7 +262,7 @@ exports.reset_daily_tasks = function (user_id, daily_task, daily_task_clear_time
         daily_task = init_daily_tasks();
         db.init_daily_tasks(user_id, JSON.stringify(daily_task), now_time, function (success) {
             if (!success) {
-                logger.log("Init daily tasks error!!!!");
+                logger.debug("Init daily tasks error!!!!");
             }
         });
     }
@@ -302,7 +276,7 @@ exports.reset_week_tasks = function (user_id, week_task, week_task_clear_time) {
         week_task = init_week_tasks();
         db.init_week_tasks(user_id, JSON.stringify(week_task), now_time, function (success) {
             if (!success) {
-                logger.log("Init week tasks error!!!!");
+                logger.debug("Init week tasks error!!!!");
             }
         });
     }

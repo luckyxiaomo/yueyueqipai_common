@@ -10,6 +10,7 @@ global.TASK_TYPE_WEEK = 2;//周常任务
 global.REWARD_TYPE_INGOT = 1;//房卡
 global.REWARD_TYPE_GOLD = 2;//钻石
 global.REWARD_TYPE_TURN = 3;//转盘次数
+global.REWARD_TYPE_CAIBEI = 4;//彩贝
 
 
 //目标类型
@@ -125,7 +126,7 @@ global.is_same_day = function (t1, t2) {
 global.is_same_week = function (t1, t2) {
     var m1 = moment(t1 * 1000);
     var m2 = moment(t2 * 1000);
-    if(m1.isoWeek() == m2.isoWeek() && Math.abs(m1.diff(m2, 'days')) <= 7) {
+    if (m1.isoWeek() == m2.isoWeek() && Math.abs(m1.diff(m2, 'days')) <= 7) {
         return true;
     }
     return false;
