@@ -1,3 +1,7 @@
+const path = require("path");
+const log4js = require('../utils/log').log4js;
+const logger = log4js.getLogger(path.basename(__filename));
+
 var all_task_conf = require('./data/daily_task').daily_task;
 if (process.ENV_CONFIG.ENV == 'youyou') {
     all_task_conf = require('./data/daily_task_youyou').daily_task_youyou;
@@ -6,7 +10,6 @@ if (process.ENV_CONFIG.ENV == 'youyou') {
 //new 数据库
 var db = require('../../utils/database');
 const global_setting = require('./global_setting').global;
-var logger = require("../log_service/log").logger
 var moment = require('moment');
 const money_service = require("../money_service/money_service");
 
