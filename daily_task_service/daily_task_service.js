@@ -8,7 +8,7 @@ if (process.ENV_CONFIG.ENV == 'youyou') {
 }
 // var db = require("../../utils/db");
 //new 数据库
-var db = require('../../utils/database');
+var db = require('../database');
 const global_setting = require('./global_setting').global;
 var moment = require('moment');
 const money_service = require("../money_service/money_service");
