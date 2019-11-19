@@ -18,7 +18,7 @@ exports.daily_task = {
     "task_type": 1,
     "name": "竞技奖励",
     "describe": "参与一次竞技场",
-    "target_type": 1,
+    "target_type": 3,
     "target": 1,
     "reward": "[[4,30]]",
     "status": 1

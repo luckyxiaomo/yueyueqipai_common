@@ -17,6 +17,7 @@ global.REWARD_TYPE_CAIBEI = 4;//彩贝
 //公用
 global.TARGET_TYPE_FIRST_WIN = 1;//首胜.
 global.TARGET_TYPE_FINISH_ALL = 2;//成功完成牌局（10/10, 20/20).
+global.TARGET_TYPE_JOIN_MATCH = 3;//参与一场竞技赛.
 
 //账号
 global.TARGET_TYPE_ACCOUNT = 1000;
